@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structured Q&A Form with File Upload</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2d3e50;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+
+        .sidebar h2 {
+            color: #ffffff;
+            margin-bottom: 40px;
+            font-size: 24px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            border-radius: 8px;
+            background-color: #34495e;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-left: 250px;
+            width: 100%;
+            padding: 30px;
+            background-color: #f4f6f9;
+        }
+
+        .container {
+            background-color: white;
+            max-width: 900px;
+            margin: auto;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        /* Structured Form */
+        .upload-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-section {
+            grid-column: span 2;
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .upload-form label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .upload-form input[type="file"],
+        .upload-form input[type="text"],
+        .upload-form input[type="number"] ,
+        .upload-form select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            width: 100%;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-form input[type="file"]:focus,
+        .upload-form input[type="text"]:focus,
+        .upload-form input[type="number"]:focus,
+        .upload-form select:focus {
+            border-color: #1abc9c;
+        }
+
+        .upload-form button {
+            background-color: #1abc9c;
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            grid-column: span 2;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-form button:hover {
+            background-color: #16a085;
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .response-output p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .response-output strong {
+            color: #1abc9c;
+        }
+
+        .response-output p.error {
+            color: red;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px 20px;
+                box-shadow: none;
+            }
+
+            .sidebar a {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .upload-form button {
+                font-size: 16px;
+            }
+
+            .upload-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <a href="/">Home</a>
+        <a href="/AddQuestions">Add Questions</a>
+        <a href="/EditQuestions">EditQuestions</a>
+        <a href="/GenerateQuestion">Generate Paper</a>
+        <a href="/GeneratedPapers">Question Papers</a>
+        <a href = "/rankedquestions">Ranked Questions</a>
+        <a href="/attendence">Attendence</a>
+        <a href="/classperformance">Class Performance</a>
+        {% if role == 'admin' %}
+        <a href="/teacherperformance">Teacher Performance</a>
+        <a href="/addTeachers">Add Teachers</a>
+        {% endif %}
+        <a href="account">Profile</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <h1>Upload Questions</h1>
+            <form id="question-form" class="upload-form">
+
+                <!-- Question Details Section -->
+                <div class="form-section">
+                    <label for="question">Enter Question:</label>
+                    <input type="text" id="question" name="question" placeholder="Type your question here..." required />
+                </div>
+
+                <!-- Class and Subject Details Section -->
+                <div>
+                    <label for="class">Class Name:</label>
+                    <select id="class" name="class" required>
+                        <option value="" disabled selected>Select Class</option>
+                        <!-- Options for classes 1 to 10 -->
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="subject">Subject:</label>
+                    <select id="subject" name="subject" required>
+                        <option value="" disabled selected>Select Subject</option>
+                        <!-- Options for subjects -->
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="Chemistry">Chemistry</option>
+                    </select>
+                </div>
+
+                <!-- Lesson and Marks Section -->
+                <div>
+                    <label for="assessment">Assessment Type:</label>
+                    <select id="assessment" name="assessment" required>
+                        <option value="" disabled selected>Select Assessment Type</option>
+                        <!-- Options for assessment types -->
+                        <option value="summative">Summative</option>
+                        <option value="formative">Formative</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="marks">Marks:</label>
+                    <input type="number" id="marks" name="marks" placeholder="Marks" required />
+                </div>
+
+                <div>
+                    <label for="diagram">Current Diagram:</label>
+                    <input type="file" id="diagram" name="diagram" placeholder="diagram">
+
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit">Submit</button>
+            </form>
+
+            <!-- Response Section -->
+            <div id="response-output" class="response-section" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('question-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const responseOutput = document.getElementById('response-output');
+
+            try {
+                const response = await fetch('/AddQuestions', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                responseOutput.style.display = 'block';
+                responseOutput.className = ''; // Reset class
+                if (result.error) {
+                    responseOutput.classList.add('error');
+                    responseOutput.innerHTML = `<p>Error: ${result.error}</p>`;
+                } else {
+                    responseOutput.classList.add('success');
+                    responseOutput.innerHTML = `<p>${result.message}</p>`;
+                }
+            } catch (error) {
+                responseOutput.style.display = 'block';
+                responseOutput.className = 'error';
+                responseOutput.innerHTML = `<p>Error submitting form</p>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

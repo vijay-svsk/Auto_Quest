@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Generation</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #e7f0f9;
+            min-height: 100vh;
+            display: flex;
+            
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            overflow-y: auto; 
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 5px;
+            background-color: #34495e;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-left: 250px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .container {
+            background-color: white;
+            max-width: 900px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+        label {
+            font-size: 16px;
+            color: #34495e;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 600;
+        }
+
+        select,
+        input,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #8c8888;
+            font-size: 16px;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #1abc9c;
+            outline: none;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"] {
+            background-color: #27ae60;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2ecc71;
+        }
+
+        #chaptersList {
+            display: block;
+        }
+
+        #chaptersList label {
+            justify-content: flex-start; /* Align checkbox and label vertically centered */
+            gap: 10px;
+         
+            margin-bottom: 10px;
+        }
+
+        #sectionsContainer {
+            display: none;
+            margin-top: 40px;
+        }
+        .section-row {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .section-box label {
+            
+            font-weight: bold;
+        }
+
+        .section-box select, .section-box input {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+
+        .standard-container {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
+        }
+
+        .standard-container label {
+            margin-right: 10px;
+        }
+
+        .standard-container br {
+            margin-bottom: 5px;
+        }
+
+        .section-box button {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .section-box button:hover {
+            background-color: #c0392b;
+        }
+
+        #sectionsList {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+
+
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 15px 20px;
+                box-shadow: none;
+            }
+
+            .sidebar a {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <a href="/">Home</a>
+        <a href="/AddQuestions">Add Questions</a>
+        <a href="/EditQuestions">Edit Questions</a>
+        <a href="/GenerateQuestion">Generate Paper</a>
+        <a href="/GeneratedPapers">Question Papers</a>
+        <a href = "/rankedquestions">Ranked Questions</a>
+        <a href="/attendence">Attendence</a>
+        <a href="/classperformance">Class Performance</a>
+        {% if role == 'admin' %}
+        <a href="/teacherperformance">Teacher Performance</a>
+        <a href="/addTeachers">Add Teachers</a>
+        {% endif %}
+        <a href="account">Profile</a>
+        <a href="/logout">Logout</a>
+        <!-- Add more links if needed -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <h1>MRM School Question Paper Generation</h1>
+            <div id ="form11">
+                <form id="form1" onsubmit="fetchChapters(event)">
+                    <label for="class">Class:</label>
+                    <select name="class" id="class">
+                        <option value="" disabled selected>Select a class</option>
+                        {% for c in classes %}
+                        <option value="{{ c }}">{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+            
+                    <label for="subject">Subject:</label>
+                    <select name="subject" id="subject">
+                        <option value="" disabled selected>Select a subject</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject }}">{{ subject }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+            
+                    <label for="assessment">Assessment Type:</label>
+                    <select name="assessment" id="assessment">
+                        <option value="" disabled selected>Select an assessment type</option>
+                        {% for assessment in assessments %}
+                        <option value="{{ assessment }}">{{ assessment }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <button type="submit">Generate Question Paper</button>
+                </form>
+            </div>
+
+
+            <div id="newform" style="display:none;">
+                <form id="questionPaperForm" onsubmit="handleForm(event)"></form>
+                    <div id="givendata"></div>
+                    <h3>Select Chapters</h3>
+                    <div id="chaptersList"></div>
+
+                    <!-- Sections Input -->
+                    <div id="sectionsContainer">
+                        <h3>Section Details</h3>
+                        <div id="sectionsList"></div>
+                        <button type="button" onclick="addSection()">Add Section</button>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button onclick="handleForm(event)" type="submit">Submit</button>
+                </form>
+            </div>
+    </div>
+
+    <script>
+        let selectedClass='';
+        let selectedSubject='';
+        let selectedAssessment='';
+        function fetchChapters(event) {
+            event.preventDefault(); // Prevent form submission
+            // console.log("opened form1");
+            // Collect form data
+            const formData = new FormData(document.getElementById('form1'));
+            
+            selectedClass = formData.get('class');
+            selectedSubject = formData.get('subject');
+            selectedAssessment = formData.get('assessment');
+
+            // Make a POST request to fetch chapters
+            fetch('/chapters', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(chapters => {
+
+                // Display selected values in 'givendata'
+                const givenDataDiv = document.getElementById("givendata");
+                givenDataDiv.innerHTML = `
+                    <p><h3><strong>Class:</strong>${selectedClass}</h3></p>
+                    <p><h3><strong>Subject:</strong> ${selectedSubject}</h3></p>
+                    <p><h3><strong>Assessment Type:</strong> ${selectedAssessment}</h3></p>
+                `;
+                // Show the newform section
+                document.getElementById("newform").style.display = "block";
+                document.getElementById("form11").style.display = "none";
+
+                // Clear previous chapters
+                const chaptersContainer = document.getElementById('chaptersList');
+                chaptersContainer.innerHTML = '';
+
+                // Display new chapters
+                chapters.forEach(chapter => {
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'chapters[]';
+                    checkbox.value = chapter;
+                    checkbox.checked = true;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(` ${chapter}`));
+                    chaptersContainer.appendChild(label);
+                    chaptersContainer.appendChild(document.createElement('br'));
+                });
+
+                // Show the section controls
+                document.getElementById('sectionsContainer').style.display = 'block';
+            })
+            .catch(error => console.error('Error fetching chapters:', error));
+        }
+
+        function addSection() {
+            const sectionsContainer = document.getElementById('sectionsList');
+
+            // Create a new section row
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section-row';
+
+            // Create dropdown for section
+            const sectionLabel = document.createElement('label');
+            sectionLabel.textContent = 'Section: ';
+            const sectionDropdown = document.createElement('select');
+            sectionDropdown.name = 'section';
+            ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'].forEach(optionText => {
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                sectionDropdown.appendChild(option);
+            });
+
+            // Create dropdown for marks
+            const marksLabel = document.createElement('label');
+            marksLabel.textContent = 'Marks: ';
+            const marksDropdown = document.createElement('select');
+            marksDropdown.name = 'marks';
+            [1, 2, 3,4,5, 6, 8].forEach(optionValue => {
+                const option = document.createElement('option');
+                option.value = optionValue;
+                option.textContent = optionValue;
+                marksDropdown.appendChild(option);
+            });
+
+            // Create input for number of questions
+            const numQuestionsLabel = document.createElement('label');
+            numQuestionsLabel.textContent = 'Number of Questions: ';
+            const numQuestionsInput = document.createElement('input');
+            numQuestionsInput.type = 'number';
+            numQuestionsInput.name = 'num_questions';
+            numQuestionsInput.placeholder = 'Number of Questions';
+
+            // Create delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => sectionDiv.remove();
+
+
+             // Create labels and checkboxes for L1 to L5
+             const standards = [
+                { value: 'L1', label: 'Problem Solving (L1)' },
+                { value: 'L2', label: 'Reasoning & Proof (L2)' },
+                { value: 'L3', label: 'Communication (L3)' },
+                { value: 'L4', label: 'Connections (L4)' },
+                { value: 'L5', label: 'Visualization & Representation (L5)' }
+            ];
+
+            // Create the checkboxes for skills (Positioned below the section details)
+            const standardContainer = document.createElement('div');
+            standardContainer.className = 'standard-container';
+            const standardLabel = document.createElement('label');
+            standardLabel.textContent = 'Standards:';
+            standardContainer.appendChild(standardLabel);  // Add a label for skills
+
+            standards.forEach(standard => {
+                const standardWrapper = document.createElement('div'); // Wrap each checkbox and input together
+                standardWrapper.className = 'standard-wrapper';
+
+                const standardLabel = document.createElement('label');
+                const standardCheckbox = document.createElement('input');
+                standardCheckbox.type = 'checkbox';
+                standardCheckbox.name = 'standards[]';
+                standardCheckbox.value = standard.value;
+                standardCheckbox.checked = false; // Check by default
+                const standardText = document.createTextNode(` ${standard.label}`);
+    
+
+                const numQuesInput = document.createElement('input');
+
+                numQuesInput.type = 'number';
+                numQuesInput.name = `num_ques_${standard.value}`;
+                numQuesInput.placeholder = 'Enter number of questions';
+                numQuesInput.style.display = 'none'; // Hide the input initially
+
+                // Add event listener to toggle the number input
+                standardCheckbox.addEventListener('change', () => {
+                    if (standardCheckbox.checked) {
+                        numQuesInput.style.display = 'inline-block'; // Show input when checked
+                    } else {
+                        numQuesInput.style.display = 'none'; // Hide input when unchecked
+                        numQuesInput.value = ''; // Clear input value
+                    }
+                });
+
+                // Append elements
+                standardWrapper.appendChild(standardCheckbox);
+                standardWrapper.appendChild(standardText);
+                standardWrapper.appendChild(numQuesInput);
+                standardContainer.appendChild(standardWrapper);
+                standardContainer.appendChild(document.createElement('br'));
+            });
+
+
+            // Append inputs to the section row
+            sectionDiv.appendChild(sectionLabel);
+            sectionDiv.appendChild(sectionDropdown);
+            sectionDiv.appendChild(marksLabel);
+            sectionDiv.appendChild(marksDropdown);
+            sectionDiv.appendChild(numQuestionsLabel);
+            sectionDiv.appendChild(numQuestionsInput);
+            sectionDiv.appendChild(standardContainer); // Append skill checkboxes
+            sectionDiv.appendChild(deleteButton);
+
+            // Append the section row to the container
+            sectionsContainer.appendChild(sectionDiv);
+        }
+    
+
+   
+
+        
+        // Submit the form with all the data
+        function handleForm(event) {
+            event.preventDefault(); // Prevent default form submission
+            // console.log("opened form2");
+
+            const formData = new FormData(document.getElementById('questionPaperForm'));
+            const sectionsData = [];
+
+
+            // Collect dynamic section data
+            document.querySelectorAll('.section-row').forEach(sectionBox => {
+                const section = sectionBox.querySelector('select[name="section"]').value;
+                const marks = sectionBox.querySelector('select[name="marks"]').value;
+                const numQuestions = sectionBox.querySelector('input[name="num_questions"]').value;
+                const standards = Array.from(sectionBox.querySelectorAll('input[name="standards[]"]:checked')).map(standard => {
+                    const standardValue = standard.value;
+                    const numQuesInput = sectionBox.querySelector(`input[name="num_ques_${standardValue}"]`);
+                    return {
+                        standard: standardValue,
+                        num_ques: numQuesInput ? numQuesInput.value : null
+                        };
+                    });
+
+                sectionsData.push({
+                    section,
+                    marks,
+                    numQuestions,
+                    standards
+                });
+            });
+
+            // Manually collect chapters
+            const chapters = Array.from(document.querySelectorAll('input[name="chapters[]"]:checked')).map(input => input.value);
+
+
+
+            const formPayload = {
+                class: selectedClass,
+                subject: selectedSubject,
+                assessment: selectedAssessment,
+                chapters: chapters,
+                sections: sectionsData
+            };
+
+            //print
+            // console.log(formPayload);
+            
+            
+            // Send data to backend
+            fetch('/generatepaper1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formPayload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Form submitted successfully:', data);
+                alert('Question paper generated successfully!');
+                // Redirect to /generate1
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('Error generating question paper!');
+            });
+        }
+    
+    
+    
+    </script>
+
+</body>
+
+</html>

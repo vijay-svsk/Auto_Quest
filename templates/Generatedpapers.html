@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit questions</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            overflow-y: auto; 
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 5px;
+            background-color: #34495e;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        .container {
+            background-color: white;
+            max-width: 100%;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+ 
+         /* Edit and Delete Button Styling */
+         .edit-btn,
+        .delete-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Edit Button Style */
+        .edit-btn {
+            background-color: #4CAF50;  /* Green */
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #45a049;  /* Darker Green */
+        }
+
+        /* Delete Button Style */
+        .delete-btn {
+            background-color: #f44336;  /* Red */
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #e53935;  /* Darker Red */
+        }
+
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #34495e;
+            font-weight: 600;
+        }
+
+
+           /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #ecf0f1;
+        }
+
+        .view-btn {
+            background-color: #1abc9c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background-color: #16a085;
+        }
+
+        /* Modal Styles */
+        #edit-question-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed position to stay on top of content */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark transparent background */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* Ensure the modal is on top */
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-group:last-child {
+            margin-right: 0;
+        }
+
+
+        .modal-content label {
+            margin-top: 10px;
+        }
+
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal-content button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #16a085;
+        }
+
+        /* Cancel Button Styles */
+        .modal-content button[type="button"] {
+            background-color: #e74c3c;
+        }
+
+        .modal-content button[type="button"]:hover {
+            background-color: #c0392b;
+        }
+
+            /* Make labels bold */
+        #edit-question-modal label {
+            font-weight: bold;
+        
+        }
+
+  
+      
+    
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px 20px;
+                box-shadow: none;
+            }
+
+            .sidebar a {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+         
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <a href="/">Home</a>
+        <a href="/AddQuestions">Add Questions</a>
+        <a href="/EditQuestions">EditQuestions</a>
+        <a href="/GenerateQuestion">Generate Paper</a>
+        <a href="/GeneratedPapers">Question Papers</a>
+        <a href = "/rankedquestions">Ranked Questions</a>
+        <a href="/attendence">Attendence</a>
+        <a href="/classperformance">Class Performance</a>
+        {% if role == 'admin' %}
+        <a href="/teacherperformance">Teacher Performance</a>
+        <a href="/addTeachers">Add Teachers</a>
+        {% endif %}
+        <a href="account">Profile</a>
+        <a href="/logout">Logout</a>
+        <!-- Add more links if needed -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <h1>Generated Question Papers</h1>
+            <!-- Table to Display Scanned Papers -->
+            <table id="generated-papers-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                        <th>Assessment</th>
+                        <th>Generated Time</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+
+
+            <!-- Section to Display Questions -->
+            <div id="questions-section" style="display:none;">
+                <h2>Questions for Selected Paper</h2>
+                <table id="questions-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Question</th>
+                            <th>Diagram</th>
+                            <th>Chapter</th>
+                            <th>Standard</th>
+                            <th>Marks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Questions will be populated here -->
+                    </tbody>
+                </table>
+
+                <!-- Download Paper Button -->
+                <div style="margin-top: 20px;">
+                    <button id="download-paper-btn" onclick="downloadPaper()">Download Paper</button>
+                </div>
+
+            </div>
+       
+
+        </div>
+    </div>
+
+    <!-- Modal for Editing Question -->
+    <div id="edit-question-modal" style="display:none;">
+        <div class="modal-content">
+            <h2>Edit Question</h2>
+            <form id="edit-question-form">
+
+                 <!-- First row with class and subject -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Class:</label>
+                    <span id="edit-class-label"></span>
+                </div>
+                <div class="form-group">
+                    <label>Subject:</label>
+                    <span id="edit-subject-label"></span>
+                </div>
+                <div class="form-group">
+                    <label>Marks:</label>
+                    <span id="edit-marks-label"></span>
+                </div>
+            </div>
+            
+            <!-- Second row with marks and lesson -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Standard:</label>
+                    <span id="edit-standard-label"></span>
+                </div>
+                <div class="form-group">
+                    <label>Chapter:</label>
+                    <span id="edit-chapter-label"></span>
+                </div>
+            </div>
+
+
+                <label for="edit-question-text">Question:</label>
+                <textarea id="edit-question-text" name="question_text" required></textarea><br>
+
+                <label for="edit-diagram">Current Diagram:</label>
+                <img id="current-diagram" src="" alt="Current Diagram" style="max-width: 100px; max-height: 100px; display: none;">
+                <input type="file" id="edit-diagram" name="diagram">
+
+                <!-- Button for changing the question with AI -->
+                <button type="button" onclick="generateQuestionWithAI()">Change Question with AI</button><br><br>
+                
+                <div id="ai-answer">
+                    <label>New Question:</label>
+                    <textarea id="ai-response" style="margin-top: 10px; font-weight: bold; color: #333;" required></textarea><br>
+                
+                    <label for="new-diagram">New Diagram:</label>
+                    <input type="file" id="new-diagram" name="diagram">
+
+                </div>
+                
+                <button type="submit">Replace Question</button>
+                <button type="button" onclick="closeEditModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+      
+
+      let globalclass = null;
+      let globalsubject=null;
+      let currentQuestionId = null;
+      let currentpaperid = null;
+
+        async function fetchPapers() {
+            try {
+                const response = await fetch('/GeneratedPapers1');
+                const papers = await response.json();
+                // console.log(papers)
+
+                const tableBody = document.getElementById('generated-papers-table').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = '';  // Clear any existing rows
+
+                // Loop through the fetched data and populate the table
+                papers.forEach(paper => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-id1', paper.id); // Set the data-id attribute to identify the paper
+                    row.innerHTML = `
+                        <td>${paper.id}</td>
+                        <td>${paper.class}</td>
+                        <td>${paper.subject}</td>
+                        <td>${paper.assessment}</td>
+                        <td>${paper.generated_time}</td>
+                        <td><a href="#" class="view-btn" onclick="getQuestions(${paper.id})">Get Paper</a></td>
+                        <td><a href="#" class="view-btn" onclick="deleteQuestionPaper(${paper.id})">Delete</a></td>
+
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching generated papers:', error);
+                const tableBody = document.getElementById('generated-papers-table').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = '<tr><td colspan="3">Failed to load data. Please try again later.</td></tr>';
+            }
+        }
+
+        async function deleteQuestionPaper(paperId) {
+            try {
+                const response = await fetch(`/deletegeneratedpaper/${paperId}`, { method: 'DELETE' });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete the question paper. Please try again.');
+                }
+
+                const result = await response.json();
+                alert(result.message || 'Question paper deleted successfully.');
+                fetchPapers()
+                // Optionally, refresh or update the UI here
+            } catch (error) {
+                console.error('Error deleting question paper:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+
+        async function getQuestions(paperId) {
+            try {
+                currentpaperid=paperId;
+                const response = await fetch(`/get_generated_questions/${paperId}`);
+                const sectionsData = await response.json();
+                // console.log(sectionsData)
+                const row1 = document.querySelector(`#generated-papers-table tr[data-id1="${paperId}"]`);
+                globalclass=row1.cells[1].textContent;
+                globalsubject=row1.cells[2].textContent;
+
+                const questionsSection = document.getElementById('questions-section');
+                questionsSection.style.display = 'block'; // Show the questions section
+
+                const tableBody = document.getElementById('questions-table').getElementsByTagName('tbody')[0];
+                tableBody.innerHTML = '';  // Clear any existing rows
+                let serialNumber = 1; // Initialize serial number
+                
+                // Loop through the sections and populate the questions table
+                sectionsData.forEach(section => {
+                    // Add a section header row
+                    const sectionRow = document.createElement('tr');
+                    sectionRow.innerHTML = `
+                        <td colspan="8" style="font-weight: bold; text-align: center;">Section ID: ${section.sectionid}</td>
+                    `;
+                    tableBody.appendChild(sectionRow);
+
+                    // Add the questions for the section
+                    section.questions.forEach(question => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-id', question.id); // Set the data-id attribute to identify the question
+                        row.innerHTML = `
+                        <td>${serialNumber}</td>
+                        <td>${question.question_text}</td>
+                        <td>${question.diagram}</td>
+                        <td>${question.chapter}</td>
+                        <td>${question.standard}</td>
+                        <td>${question.marks}</td>
+                        <td><button onclick="editQuestion(${question.id})" class="edit-btn">Edit</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                        serialNumber++; // Increment serial number for the next question
+                    });
+                });
+
+        
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+                alert('Failed to load questions. Please try again later.');
+            }
+        }
+
+
+        function editQuestion(questionId) {
+            currentQuestionId = questionId;
+            const row = document.querySelector(`#questions-table tr[data-id="${currentQuestionId}"]`);
+
+
+            if (!row) {
+            console.error('Question row not found');
+            return;
+            }
+
+
+              // Extract the values from the row and populate the edit form
+            document.getElementById('edit-class-label').textContent = globalclass; // Class
+            document.getElementById('edit-subject-label').textContent = globalsubject; // Subject
+            document.getElementById('edit-standard-label').textContent = row.cells[4].textContent;  // standard
+            document.getElementById('edit-chapter-label').textContent = row.cells[3].textContent;  // chapter
+            document.getElementById('edit-marks-label').textContent = row.cells[5].textContent;   // Marks
+            document.getElementById('edit-question-text').textContent = row.cells[1].textContent; // Question
+            document.getElementById('ai-response').textContent = ''; // Question
+            // Get the diagram URL if it exists
+            const diagramCell = row.cells[3].querySelector('img');
+            const currentDiagramImage = document.getElementById('current-diagram');
+
+            if (diagramCell) {
+                currentDiagramImage.src = diagramCell.src; // Set the current diagram source
+                currentDiagramImage.style.display = 'block'; // Show the image
+            } else {
+                currentDiagramImage.src = ''; // Clear the image source
+                currentDiagramImage.style.display = 'none'; // Hide the image
+            }
+
+
+            // Show the modal
+            document.getElementById('edit-question-modal').style.display = 'flex';
+        }
+
+        async function generateQuestionWithAI() {
+            const classLabel = document.getElementById('edit-class-label').textContent;
+            const subjectLabel = document.getElementById('edit-subject-label').textContent;
+            const marksLabel = document.getElementById('edit-marks-label').textContent;
+            const standardLabel = document.getElementById('edit-standard-label').textContent;
+            const chapterLabel = document.getElementById('edit-chapter-label').textContent;
+            const questionText = document.getElementById('edit-question-text').value;
+
+            // Data to send to the backend
+            const data = {
+                class: classLabel,
+                subject: subjectLabel,
+                marks: marksLabel,
+                standard: standardLabel,
+                chapter: chapterLabel,
+                question_text: questionText,
+            };
+
+            try {
+                // Call the backend API
+                const response = await fetch('/generate_new_question_with_ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                // console.log("res",result)
+         
+                // Display the AI-generated question
+                const aiResponseDiv = document.getElementById('ai-response');
+
+                aiResponseDiv.textContent = `${result.generated_question}`;
+            } catch (error) {
+                console.error('Error:', error);
+            
+                const aiResponseDiv = document.getElementById('ai-response');
+                aiResponseDiv.textContent = 'Failed to generate question. Please try again.';
+            }
+     
+        }
+
+
+        function closeEditModal() {
+            document.getElementById('edit-question-modal').style.display = 'none';
+        }
+
+        document.getElementById('edit-question-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('id', currentQuestionId);
+            formData.append('question_text', document.getElementById('ai-response').value);
+
+            const diagramFile = document.getElementById('new-diagram');
+            if (diagramFile && diagramFile.files.length > 0) {
+                formData.append('diagram', diagramFile.files[0]);
+            }
+
+
+            try {
+                // Call the backend API to update the question
+                const response = await fetch(`/replaceQuestion/${currentQuestionId}`, {
+                    method: 'PUT',
+                    body: formData, // Use FormData here
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Question updated successfully!');
+                    closeEditModal();
+                    getQuestions(currentpaperid);
+                } else {
+                    alert('Failed to update question. Please try again.' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating question:', error);
+                alert('Failed to update question. Please try again.');
+            }
+        });
+
+
+
+        async function downloadPaper() {
+            try {
+
+                const response = await fetch(`/downloadpaper/${currentpaperid}`);
+                // console.log("res",response);
+                if (response.ok) {
+                    // Get the response as a Blob
+                    const blob = await response.blob();
+                    // Create a temporary anchor element to trigger download
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = window.URL.createObjectURL(blob);
+                    downloadLink.download = `Question_Paper_${currentpaperid}.docx`;
+                    downloadLink.click();
+                    // Clean up the temporary link
+                    window.URL.revokeObjectURL(downloadLink.href);
+                    downloadLink.remove();
+                } else {
+                    alert('Failed to download the paper. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error downloading paper:', error);
+                alert('An error occurred while downloading the paper.');
+            }
+        }
+
+
+
+        // Fetch scanned papers when the page loads
+        window.onload = fetchPapers;
+
+    </script>
+
+</body>
+
+</html>

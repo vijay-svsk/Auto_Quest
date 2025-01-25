@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Analysis</title>
+</head>
+<style>
+       /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: #f4f6f9;
+    min-height: 100vh;
+    display: flex;
+}
+
+
+/* Sidebar Menu */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #2c3e50;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    overflow-y: auto; 
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    color: white;
+    margin-bottom: 50px;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 5px;
+    background-color: #34495e;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #1abc9c;
+}
+
+/* Main Container */
+.main-container {
+    margin-left: 250px;
+    width: 100%;
+    padding: 30px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: #005f73;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input[type="text"], input[type="number"], input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    background: linear-gradient(to right, lightgreen, lightblue);
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(to right, lightblue, lightgreen);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+table th {
+    background: linear-gradient(to right, lightgreen, lightblue);
+    color: #ffffff;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+.error, .success {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.error {
+    background: #ffcccc;
+    color: #cc0000;
+}
+
+.success {
+    background: #ccffcc;
+    color: #006600;
+}
+
+.pie-chart-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pie-chart-container img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+}
+
+</style>
+<body>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar">
+            <a href="/">Home</a>
+            <a href="/AddQuestions">Add Questions</a>
+            <a href="/EditQuestions">Edit Questions</a>
+            <a href="/GenerateQuestion">Generate Paper</a>
+            <a href="/GeneratedPapers">Question Papers</a>
+            <a href = "/rankedquestions">Ranked Questions</a>
+            <a href="/attendence">Attendence</a>
+            <a href="/classperformance">Class Performance</a>
+            {% if role == 'admin' %}
+            <a href="/teacherperformance">Teacher Performance</a>
+            <a href="/addTeachers">Add Teachers</a>
+            {% endif %}
+            <a href="account">Profile</a>
+            <a href="/logout">Logout</a>
+    
+            <!-- Add more links if needed -->
+        </div>
+    
+        <!-- Main Content -->
+        <div class="main-container">
+            <div class="container">
+                <h1>Class Performance Analysis</h1>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="text" name="class_name" placeholder="Enter Class Name" required>
+                    <input type="number" name="passing_marks" placeholder="Enter Passing Marks" required>
+                    <input type="file" name="file" required>
+                    <button type="submit">Analyze</button>
+                </form>
+
+                {% if error %}
+                <div class="error">{{ error }}</div>
+                {% endif %}
+
+                {% if analysis %}
+                <h2>Class Analysis Results</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Average Marks</th>
+                            <th>Topper</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in sorted_students %}
+                        <tr>
+                            <td>{{ student['Student'] }}</td>
+                            <td>{{ student['Average Marks'] }}</td>
+                            <td>{{ student['Topper'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h3>Class Average: {{ class_average }}</h3>
+                <h3>Pass Percentage: {{ pass_percentage }}%</h3>
+                <h3>Fail Percentage: {{ fail_percentage }}%</h3>
+
+                <div class="pie-chart-container">
+                    <h3>Pass/Fail Distribution</h3>
+                    <img src="data:image/png;base64,{{ pie_chart_url }}" alt="Pie Chart">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+</body>
+</html>

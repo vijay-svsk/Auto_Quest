@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranked Questions</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+        }
+                /* Sidebar Menu */
+                .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #2c3e50;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            overflow-y: auto; 
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 5px;
+            background-color: #34495e;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-left: 250px;
+            width: 100%;
+            padding: 30px;
+        }
+        
+        .container {
+            background-color: white;
+            max-width: 100%;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: #0078d7;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        form label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        form select, button {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        form button {
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #005bb5;
+        }
+        table {
+            margin: 0 auto;
+            width: 80%;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        th, td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #0078d7;
+            color: white;
+            font-size: 1.1rem;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        footer {
+            margin-top: 30px;
+            background-color: #0078d7;
+            color: white;
+            padding: 10px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <a href="/">Home</a>
+        <a href="/AddQuestions">Add Questions</a>
+        <a href="/EditQuestions">Edit Questions</a>
+        <a href="/GenerateQuestion">Generate Paper</a>
+        <a href="/GeneratedPapers">Question Papers</a>
+        <a href = "/rankedquestions">Ranked Questions</a>
+        <a href="/attendence">Attendence</a>
+        <a href="/classperformance">Class Performance</a>
+        {% if role == 'admin' %}
+        <a href="/teacherperformance">Teacher Performance</a>
+        <a href="/addTeachers">Add Teachers</a>
+        {% endif %}
+        <a href="account">Profile</a>
+        <a href="/logout">Logout</a>
+
+        <!-- Add more links if needed -->
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <header>
+                <h1>Ranked Questions</h1>
+            </header>
+            <form method="POST">
+                <label for="class">Select Class:</label>
+                <select name="class" id="class" required>
+                    <option value="" disabled selected>Choose Class</option>
+                    {% for cls in classes %}
+                        <option value="{{ cls }}">{{ cls }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="subject">Select Subject:</label>
+                <select name="subject" id="subject" required>
+                    <option value="" disabled selected>Choose Subject</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject }}">{{ subject }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Submit</button>
+            </form>
+
+            <h2>Ranked Questions</h2>
+            {% if ranked_questions %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Question</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for question, score in ranked_questions %}
+                            <tr>
+                                <td>{{ loop.index }}</td> <!-- 1-based index -->
+                                <td>{{ question[1] }}</td>
+                                <td>{{ score | round(2) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            {% else %}
+                <p>No questions found for the selected criteria.</p>
+            {% endif %}
+            <footer>
+                <p>&copy; 2025 Ranked Questions System. All Rights Reserved.</p>
+            </footer>
+
+        </div>
+    </div>
+</body>
+</html>
